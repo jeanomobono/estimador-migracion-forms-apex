@@ -1,0 +1,614 @@
+page 100 (
+    name: Administración de Parámetros
+    alias: ADMIN-PARAMETROS
+    title: Parámetros del sistema
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb-admin-parametros (
+        name: Parámetros
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: REGION_POSITION_01
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region ig-complejidad (
+        name: Horas por nivel de complejidad
+        type: interactiveGrid
+        advanced {
+            htmlDomId: ig_complejidad
+        }
+        layout {
+            sequence: 20
+            slot: BODY
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                    parametro_complejidad_id,
+                    tipo_elemento,
+                    nivel_complejidad,
+                    horas,
+                    updated_by,
+                    updated_at
+                from parametros_complejidad
+                order by tipo_elemento, horas
+                ```
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                update
+            ]
+        }
+        messages {
+            whenNoDataFound: Sin datos
+        }
+        toolbar {
+            controls: [
+                saveButton
+            ]
+        }
+
+        savedReport PRIMARY (
+            visibility: primary
+            view {
+                default: grid
+            }
+
+            displayColumn (
+                column: @TIPO_ELEMENTO
+                layout {
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @NIVEL_COMPLEJIDAD
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @HORAS
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_BY
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_AT
+                layout {
+                    sequence: 5
+                }
+            )
+        )
+
+        column PARAMETRO_COMPLEJIDAD_ID (
+            type: hidden
+            layout {
+                sequence: 10
+            }
+            source {
+                databaseColumn: PARAMETRO_COMPLEJIDAD_ID
+                dataType: number
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column TIPO_ELEMENTO (
+            type: textField
+            heading {
+                heading: Tipo
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                databaseColumn: TIPO_ELEMENTO
+                dataType: varchar2
+                queryOnly: true
+            }
+        )
+
+        column NIVEL_COMPLEJIDAD (
+            type: textField
+            heading {
+                heading: Nivel
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: NIVEL_COMPLEJIDAD
+                dataType: varchar2
+                queryOnly: true
+            }
+        )
+
+        column HORAS (
+            type: numberField
+            heading {
+                heading: Horas
+                alignment: end
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: HORAS
+                dataType: number
+            }
+            validation {
+                valueRequired: true
+            }
+        )
+
+        column UPDATED_BY (
+            type: textField
+            heading {
+                heading: Último cambio por
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: UPDATED_BY
+                dataType: varchar2
+                queryOnly: true
+            }
+        )
+
+        column UPDATED_AT (
+            type: textField
+            heading {
+                heading: Fecha
+            }
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: UPDATED_AT
+                dataType: timestamp
+                queryOnly: true
+            }
+        )
+    )
+
+    process ARP_COMPLEJIDAD (
+        name: IG Complejidad - Guardar datos
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @ig-complejidad
+        execution {
+            sequence: 10
+        }
+    )
+
+    region ig-tiempo-adicional (
+        name: Tiempos adicionales
+        type: interactiveGrid
+        advanced {
+            htmlDomId: ig_tiempo_adicional
+        }
+        layout {
+            sequence: 30
+            slot: BODY
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                    parametro_tiempo_adicional_id,
+                    concepto,
+                    base_calculo,
+                    porcentaje,
+                    updated_by,
+                    updated_at
+                from parametros_tiempo_adicional
+                order by orden
+                ```
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                update
+            ]
+        }
+        messages {
+            whenNoDataFound: Sin datos
+        }
+        toolbar {
+            controls: [
+                saveButton
+            ]
+        }
+
+        savedReport PRIMARY (
+            visibility: primary
+            view {
+                default: grid
+            }
+
+            displayColumn (
+                column: @CONCEPTO
+                layout {
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @BASE_CALCULO
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @PORCENTAJE
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_BY
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_AT
+                layout {
+                    sequence: 5
+                }
+            )
+        )
+
+        column PARAMETRO_TIEMPO_ADICIONAL_ID (
+            type: hidden
+            layout {
+                sequence: 10
+            }
+            source {
+                databaseColumn: PARAMETRO_TIEMPO_ADICIONAL_ID
+                dataType: number
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column CONCEPTO (
+            type: textField
+            heading {
+                heading: Concepto
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                databaseColumn: CONCEPTO
+                dataType: varchar2
+                queryOnly: true
+            }
+        )
+
+        column BASE_CALCULO (
+            type: textField
+            heading {
+                heading: Base de cálculo
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: BASE_CALCULO
+                dataType: varchar2
+                queryOnly: true
+            }
+        )
+
+        column PORCENTAJE (
+            type: numberField
+            heading {
+                heading: Porcentaje (%)
+                alignment: end
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: PORCENTAJE
+                dataType: number
+            }
+            validation {
+                valueRequired: true
+            }
+        )
+
+        column UPDATED_BY (
+            type: textField
+            heading {
+                heading: Último cambio por
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: UPDATED_BY
+                dataType: varchar2
+                queryOnly: true
+            }
+        )
+
+        column UPDATED_AT (
+            type: textField
+            heading {
+                heading: Fecha
+            }
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: UPDATED_AT
+                dataType: timestamp
+                queryOnly: true
+            }
+        )
+    )
+
+    process ARP_TIEMPO_ADICIONAL (
+        name: IG Tiempos Adicionales - Guardar datos
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @ig-tiempo-adicional
+        execution {
+            sequence: 20
+        }
+    )
+
+    region ig-etapa-case (
+        name: Distribución por etapa CASE
+        type: interactiveGrid
+        advanced {
+            htmlDomId: ig_etapa_case
+        }
+        layout {
+            sequence: 40
+            slot: BODY
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                    parametro_etapa_case_id,
+                    etapa,
+                    peso_porcentaje,
+                    recursos_paralelos,
+                    updated_by,
+                    updated_at
+                from parametros_etapa_case
+                order by orden
+                ```
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                update
+            ]
+        }
+        messages {
+            whenNoDataFound: Sin datos
+        }
+        toolbar {
+            controls: [
+                saveButton
+            ]
+        }
+
+        savedReport PRIMARY (
+            visibility: primary
+            view {
+                default: grid
+            }
+
+            displayColumn (
+                column: @ETAPA
+                layout {
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @PESO_PORCENTAJE
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @RECURSOS_PARALELOS
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_BY
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_AT
+                layout {
+                    sequence: 5
+                }
+            )
+        )
+
+        column PARAMETRO_ETAPA_CASE_ID (
+            type: hidden
+            layout {
+                sequence: 10
+            }
+            source {
+                databaseColumn: PARAMETRO_ETAPA_CASE_ID
+                dataType: number
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ETAPA (
+            type: textField
+            heading {
+                heading: Etapa
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                databaseColumn: ETAPA
+                dataType: varchar2
+                queryOnly: true
+            }
+        )
+
+        column PESO_PORCENTAJE (
+            type: numberField
+            heading {
+                heading: Peso (%)
+                alignment: end
+            }
+            layout {
+                sequence: 30
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: PESO_PORCENTAJE
+                dataType: number
+            }
+            validation {
+                valueRequired: true
+            }
+        )
+
+        column RECURSOS_PARALELOS (
+            type: numberField
+            heading {
+                heading: Recursos paralelos
+                alignment: end
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: RECURSOS_PARALELOS
+                dataType: number
+            }
+            validation {
+                valueRequired: true
+            }
+        )
+
+        column UPDATED_BY (
+            type: textField
+            heading {
+                heading: Último cambio por
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: UPDATED_BY
+                dataType: varchar2
+                queryOnly: true
+            }
+        )
+
+        column UPDATED_AT (
+            type: textField
+            heading {
+                heading: Fecha
+            }
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: UPDATED_AT
+                dataType: timestamp
+                queryOnly: true
+            }
+        )
+    )
+
+    process ARP_ETAPA_CASE (
+        name: IG Etapas CASE - Guardar datos
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @ig-etapa-case
+        execution {
+            sequence: 30
+        }
+    )
+
+)

@@ -14,5 +14,18 @@ breadcrumb breadcrumb (
         }
     )
 
+    entry admin-parametros (
+        name: Parámetros
+        pageNumber: 100
+        execution {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 100
+            }
+        }
+    )
+
 )
 

@@ -77,5 +77,20 @@ list navigation-menu (
         }
     )
 
+    entry parametros (
+        label: Parámetros
+        icon {
+            imageIconCssClasses: fa-sliders
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 100
+            }
+        }
+    )
+
 )
 
