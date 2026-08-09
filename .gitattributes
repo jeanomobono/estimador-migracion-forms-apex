@@ -1,0 +1,17 @@
+# Normalize text files to LF regardless of the contributor's OS.
+# Matters for .apx: the apex/apexlang skill validates exact formatting
+# (one property per line) and stray CRLF would show up as noisy diffs
+# or grammar-validation failures.
+* text=auto eol=lf
+
+*.apx text eol=lf
+*.md  text eol=lf
+*.json text eol=lf
+*.sql text eol=lf
+
+# Binary — never diff or line-ending-normalize these.
+*.xlsx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
