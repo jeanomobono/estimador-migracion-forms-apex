@@ -54,6 +54,8 @@ en toda la conversación, no solo como prompt inicial.
   otro valor que hoy esté "hardcodeado" en las fórmulas del Excel, debe poder
   configurarse desde la aplicación sin tocar código.
 - Utiliza los ejemplos en este [repo de Github](https://github.com/oracle/apex/tree/26.1) para guiarte en la creación de los componentes de la aplicación.
+- Tienes disponible una conexión MCP usando sqlcl, el nombre de la conexión es estimador_freepdb1.
+- En el repositorio ya está exportada la aplicación sobre la que vamos a trabajar.
 
 ## Cómo quiero que trabajes
 
@@ -117,6 +119,5 @@ medida que avancemos.
 ## Qué me falta darte para arrancar
 
 - El archivo Excel de la planilla actual (lo adjunto en la sesión de trabajo).
-- Confirmar el nombre del workspace/aplicación APEX a usar.
 - Cualquier convención de nomenclatura de esquema/tablas que ya usemos en otros
   proyectos de Filomeni, si aplica (si no la tengo clara, proponela vos en la Fase 1).
