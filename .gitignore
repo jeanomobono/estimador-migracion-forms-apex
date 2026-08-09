@@ -1,0 +1,38 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor/IDE
+.idea/
+*.swp
+*.swo
+
+# Node (tooling used by the apex/apexlang skill, e.g. apexctl.mjs)
+node_modules/
+npm-debug.log*
+
+# Runtime/scratch output from the Oracle apex/apexlang skill (apexctl.mjs)
+# — generated validation reports, logs and export backups; not source.
+/artifacts/
+/ai-context/
+/routing-diagrams/
+apex-exports/
+validation-report.json
+validation-transcript.log
+problems.json
+component-contracts/
+
+# SQLcl / Oracle client logs and local connection state
+*.log
+sqlcl_history*
+
+# Office lock files (e.g. xlsx/planilla_estimacion.xlsx)
+~$*.xlsx
+~$*.xls
+
+# Local secrets/config that should never be committed
+.env
+.env.local
+*.env
+wallet/
