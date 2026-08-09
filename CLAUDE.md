@@ -1,4 +1,85 @@
-# Proyecto: Aplicación APEX de estimación de horas (reemplazo de planilla Excel)
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Estructura del repositorio
+
+- `xlsx/planilla_estimacion.xlsx`: la planilla Excel actual que la aplicación va a
+  reemplazar. Es el insumo de la Fase 0 (análisis del modelo de datos, ver más abajo).
+- `estimador-migraciones-forms-apex/`: export en formato **APEXlang** (`.apx`, texto
+  plano versionable) de la aplicación Oracle APEX — app id `100`, esquema de parsing
+  `ESTIMADOR` (ver `deployments/default.json`). Es la fuente de verdad de la app en el
+  repo, en lugar del export SQL tradicional.
+  - `application.apx`: definición de la app (navegación, tema, autenticación).
+  - `pages/`: una definición por página (`p00000` = global page, `p00001` = home,
+    `p09999` = login). Hoy son las páginas por defecto del template de APEX; todavía no
+    hay páginas propias del estimador.
+  - `page-groups.apx`: agrupación de páginas (hoy solo `administration`, sin páginas
+    asignadas aún).
+  - `shared-components/`: autenticación, autorización, breadcrumbs, LOVs, listas, build
+    options, archivos estáticos (íconos de la app) y el tema (`universal-theme`).
+  - `workspace-components/`: configuración a nivel workspace, no de la app — credencial
+    `credentials-for-claude` (header `x-api-key`) usada por el servicio GenAI
+    `claude-opus-5`, configurado como servicio GenAI por defecto para el **App Builder**
+    de APEX (asistente de IA integrado en APEX). No tiene relación con Claude Code ni
+    con la conexión MCP usada en esta sesión.
+  - `.apex/apexlang.json`: versión del formato APEXlang (`mmdVersion`) con la que se
+    generó el export.
+
+## Estado actual y forma de trabajo técnica
+
+- Todavía **no existe modelo de datos**: no hay tablas, secuencias ni paquetes PL/SQL en
+  el repo ni (asumible) en el schema `ESTIMADOR`. El proyecto está en la Fase 0 descripta
+  más abajo — no asumas estructuras de datos que no estén explícitamente en
+  `estimador-migraciones-forms-apex/`.
+- No hay build system, linter ni test suite: es una app low-code de Oracle APEX, no hay
+  código compilado ni un pipeline propio en este repo.
+- Hay una conexión MCP de **sqlcl** ya configurada de nombre **`estimador_freepdb1`**
+  para ejecutar SQL/PLSQL contra Oracle Database 26 FREE local y trabajar con el
+  workspace/app de APEX directamente — usala en vez de pedirle credenciales al usuario.
+- Cualquier cambio a la aplicación (páginas, componentes, DDL) debe quedar reflejado en
+  los archivos `.apx` de `estimador-migraciones-forms-apex/`, que es lo que se versiona
+  en git. Si el cambio se hace vía APEX Builder o sqlcl directamente contra la base,
+  hay que exportarlo/sincronizarlo a APEXlang después para que quede en el repo.
+
+## Skills instaladas (Oracle `apex` / `db`)
+
+El repo tiene dos paquetes de skills de Oracle instalados en `.agents/skills/`
+(symlinkeados desde `.claude/skills/apex` y `.claude/skills/db`; origen y hash en
+`skills-lock.json`, `source: oracle/skills` en GitHub). No están registradas como
+skills invocables por el tool `Skill` de Claude Code en este entorno — hay que leerlas
+como paquetes de referencia, empezando siempre por su `SKILL.md` (que actúa como router
+y dice qué archivo puntual leer para la tarea concreta, en vez de cargar el paquete
+entero).
+
+- **`apex`** (`.agents/skills/apex/SKILL.md`) → enruta a `apex/apexlang`
+  (`.agents/skills/apex/apexlang/SKILL.md`), el skill específico para generar y editar
+  artefactos **APEXlang** (`.apx`). Es el que hay que usar para trabajar sobre
+  `estimador-migraciones-forms-apex/`. Puntos importantes de su contrato:
+  - Espera las apps bajo `applications/<app>/`, que **no existe** en este repo — acá la
+    app vive directo en `estimador-migraciones-forms-apex/` en la raíz (candidato de
+    app "no estándar" según su propio contrato). Cuando el skill pida confirmar el
+    directorio de la app, es ese.
+  - Trae su propio CLI (`node tools/apexctl.mjs ...`, ejecutado desde la raíz del
+    paquete `.agents/skills/apex/apexlang/`) para validar/formatear APEXlang contra la
+    gramática y contra una conexión sqlcl real (`db_connection_name` →
+    `estimador_freepdb1` en este proyecto) antes de dar por buenos los `.apx`
+    generados. Requiere Node.js (hay `v25` disponible) y SQLcl 26.1.2+.
+  - No inventa objetos de base de datos: para generar componentes que dependan de
+    tablas/columnas necesita metadata real (schema `ESTIMADOR`) o que se le pida
+    explícitamente completar detalles faltantes.
+- **`db`** (`.agents/skills/db/SKILL.md`) → guía general de Oracle Database (SQL,
+  PL/SQL, SQLcl, ORDS, diseño, migraciones, performance, seguridad, etc.), organizada
+  por tabla de ruteo a subcarpetas (`db/plsql/`, `db/sqlcl/`, `db/design/`,
+  `db/devops/`, `db/agent/`, etc.). Para este proyecto, lo más relevante cuando
+  lleguemos a la Fase 1 (DDL) y siguientes son `db/design/` (modelado/ERD),
+  `db/devops/schema-migrations.md`, `db/plsql/plsql-package-design.md` y
+  `db/agent/schema-discovery.md` / `destructive-op-guards.md` (operaciones seguras de
+  agente contra la base).
+
+---
+
+## Proyecto: Aplicación APEX de estimación de horas (reemplazo de planilla Excel)
 
 ## Contexto
 
