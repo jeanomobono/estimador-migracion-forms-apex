@@ -1,0 +1,17 @@
+genAIService claude-opus-5 (
+    name: Claude Opus 5
+    provider: CLAUDE
+    endpointUrl {
+        url: https://api.anthropic.com/v1
+    }
+    authentication {
+        credentials: @credentials-for-claude
+    }
+    appBuilder {
+        defaultForNewApps: true
+    }
+    advanced {
+        modelName: claude-opus-5
+    }
+)
+
