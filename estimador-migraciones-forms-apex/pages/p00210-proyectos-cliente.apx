@@ -1,0 +1,278 @@
+page 210 (
+    name: Proyectos del cliente
+    alias: PROYECTOS-CLIENTE
+    title: Proyectos
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb-proyectos (
+        name: Proyectos
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: REGION_POSITION_01
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region ir-proyectos (
+        name: Proyectos
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                    proyecto_id,
+                    nombre,
+                    fecha_inicio_estimada,
+                    created_by,
+                    created_at
+                from proyectos
+                where cliente_id = :P210_CLIENTE_ID
+                order by nombre
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: BODY
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: #DEFAULT#
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 211
+                items: {
+                    P211_PROYECTO_ID: #PROYECTO_ID#
+                    P211_CLIENTE_ID: #P210_CLIENTE_ID#
+                }
+                clearCache: 211
+            }
+            linkIcon: <span role="img" aria-label="Editar" class="fa fa-edit" title="Editar proyecto"></span>
+        }
+        messages {
+            whenNoDataFound: No hay proyectos para este cliente. Haga clic en "Nuevo proyecto" para agregar el primero.
+        }
+
+        column PROYECTO_ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dataType: NUMBER
+            }
+        )
+
+        column NOMBRE (
+            type: plainText
+            heading {
+                heading: Proyecto
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: STRING
+            }
+        )
+
+        column FECHA_INICIO_ESTIMADA (
+            type: plainText
+            heading {
+                heading: Inicio estimado
+            }
+            layout {
+                sequence: 30
+            }
+            appearance {
+                formatMask: DD/MM/YYYY
+            }
+            source {
+                dataType: DATE
+            }
+        )
+
+        column CREATED_BY (
+            type: plainText
+            heading {
+                heading: Creado por
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                dataType: STRING
+            }
+        )
+
+        column CREATED_AT (
+            type: plainText
+            heading {
+                heading: Fecha creación
+            }
+            layout {
+                sequence: 50
+            }
+            appearance {
+                formatMask: DD/MM/YYYY HH24:MI
+            }
+            source {
+                dataType: DATE
+            }
+        )
+
+        savedReport PRIMARY (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 15
+            }
+        )
+    )
+
+    pageItem P210_CLIENTE_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @ir-proyectos
+            slot: REGION_POSITION_01
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P210_CLIENTE_NOMBRE (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @ir-proyectos
+            slot: REGION_POSITION_01
+        }
+    )
+
+    button editar-cliente (
+        buttonName: EDITAR_CLIENTE
+        label: Editar cliente
+        layout {
+            sequence: 10
+            region: @ir-proyectos
+            slot: RIGHT_OF_IR_SEARCH_BAR
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-edit
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 201
+                items: {
+                    P201_CLIENTE_ID: &P210_CLIENTE_ID.
+                }
+                clearCache: 201
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button nuevo-proyecto (
+        buttonName: NUEVO_PROYECTO
+        label: Nuevo proyecto
+        layout {
+            sequence: 20
+            region: @ir-proyectos
+            slot: RIGHT_OF_IR_SEARCH_BAR
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-plus
+            hot: true
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 211
+                items: {
+                    P211_CLIENTE_ID: &P210_CLIENTE_ID.
+                }
+                clearCache: 211
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    computation COMPUTE_CLIENTE_NOMBRE_210 (
+        itemName: P210_CLIENTE_NOMBRE
+        execution {
+            sequence: 5
+            point: beforeRegions
+        }
+        computation {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select nombre from clientes where cliente_id = :P210_CLIENTE_ID
+                ```
+        }
+    )
+
+    dynamicAction refresh-after-modal (
+        name: Actualizar lista de proyectos
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @ir-proyectos
+        }
+
+        action refresh-ir-proyectos (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @ir-proyectos
+            }
+            execution {
+                sequence: 10
+                event: @refresh-after-modal
+                fireOnInit: false
+            }
+        )
+    )
+)
