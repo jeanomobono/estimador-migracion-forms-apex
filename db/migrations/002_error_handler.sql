@@ -48,6 +48,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_ERROR_HANDLER AS
                 WHEN 'CK_VERSIONES_EST_NUMERO'        THEN 'El número de versión debe ser mayor a 0'
                 -- FK constraints — errores de integridad referencial
                 WHEN 'FK_PROYECTOS_CLIENTE'           THEN 'No se puede eliminar el cliente porque tiene proyectos asociados'
+                WHEN 'FK_CONTACTOS_CLIENTE'           THEN 'No se puede eliminar el cliente porque tiene contactos registrados. Eliminá los contactos primero.'
                 WHEN 'FK_VERSIONES_EST_PROYECTO'      THEN 'No se puede eliminar el proyecto porque tiene versiones de estimación asociadas'
                 WHEN 'FK_ELEMENTOS_VERSION'           THEN 'No se puede eliminar la versión porque tiene elementos de migración cargados'
                 WHEN 'FK_LINDET_ELEMENTO'             THEN 'No se puede eliminar el elemento porque tiene líneas de detalle asociadas'
