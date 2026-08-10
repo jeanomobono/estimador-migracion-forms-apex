@@ -39,7 +39,7 @@ page 201 (
         type: staticContent
         layout {
             sequence: 20
-            slot: REGION_POSITION_02
+            slot: BODY
         }
         appearance {
             template: @/buttons-container
