@@ -235,6 +235,18 @@ page 201 (
         )
     )
 
+    process SET_CONTEXTO_CLIENTE (
+        name: Establecer contexto cliente para trigger
+        type: executeCode
+        plsqlCode:
+            ```plsql
+            PKG_APEX_CONTEXT.g_cliente_id := :P201_CLIENTE_ID;
+            ```
+        execution {
+            sequence: 15
+        }
+    )
+
     process ARP_CONTACTOS (
         name: IG Contactos - Guardar datos
         type: interactiveGridAutoRowProcessing
