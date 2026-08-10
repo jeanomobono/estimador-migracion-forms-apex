@@ -1,0 +1,308 @@
+page 211 (
+    name: Proyecto
+    alias: PROYECTO-MODAL
+    title: Proyecto
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons-proyecto (
+        name: Botones
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: REGION_POSITION_03
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region form-proyecto (
+        name: Proyecto
+        type: form
+        source {
+            location: localDatabase
+            tableName: PROYECTOS
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+        }
+    )
+
+    pageItem P211_PROYECTO_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @form-proyecto
+            slot: regionBody
+        }
+        source {
+            formRegion: @form-proyecto
+            column: PROYECTO_ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P211_CLIENTE_ID (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @form-proyecto
+            slot: regionBody
+        }
+        source {
+            formRegion: @form-proyecto
+            column: CLIENTE_ID
+            dataType: number
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P211_NOMBRE (
+        type: textField
+        label {
+            label: Nombre del proyecto
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @form-proyecto
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            valueRequired: true
+            maxLength: 200
+        }
+        source {
+            formRegion: @form-proyecto
+            column: NOMBRE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P211_FECHA_INICIO_ESTIMADA (
+        type: datePicker
+        label {
+            label: Inicio estimado
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @form-proyecto
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @form-proyecto
+            column: FECHA_INICIO_ESTIMADA
+            dataType: date
+        }
+    )
+
+    pageItem P211_DESCRIPCION (
+        type: textarea
+        label {
+            label: Descripción
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @form-proyecto
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 5
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @form-proyecto
+            column: DESCRIPCION
+            dataType: varchar2
+        }
+    )
+
+    button cancelar-modal (
+        buttonName: CANCEL
+        label: Cancelar
+        layout {
+            sequence: 10
+            region: @buttons-proyecto
+            slot: CLOSE
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    button eliminar-proyecto (
+        buttonName: DELETE
+        label: Eliminar
+        layout {
+            sequence: 20
+            region: @buttons-proyecto
+            slot: DELETE
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: ¿Estás seguro de que querés eliminar este proyecto?
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P211_PROYECTO_ID
+        }
+    )
+
+    button guardar-proyecto (
+        buttonName: APPLY-CHANGES
+        label: Guardar
+        layout {
+            sequence: 30
+            region: @buttons-proyecto
+            slot: NEXT
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            hot: true
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P211_PROYECTO_ID
+        }
+    )
+
+    button crear-proyecto (
+        buttonName: CREATE
+        label: Crear proyecto
+        layout {
+            sequence: 30
+            region: @buttons-proyecto
+            slot: NEXT
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            hot: true
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P211_PROYECTO_ID
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancelar diálogo
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancelar-modal
+        }
+
+        action native-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                event: @cancel-dialog
+                fireOnInit: false
+            }
+        )
+    )
+
+    process INIT_PROYECTO (
+        name: Inicializar form proyecto
+        type: formInitialization
+        formRegion: @form-proyecto
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+    )
+
+    process SAVE_PROYECTO (
+        name: Guardar proyecto
+        type: formAutoRowProcessing
+        formRegion: @form-proyecto
+        execution {
+            sequence: 10
+        }
+    )
+
+    process CLOSE_DIALOG (
+        name: Cerrar modal
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE:APPLY-CHANGES:DELETE
+        }
+    )
+)
