@@ -77,6 +77,21 @@ list navigation-menu (
         }
     )
 
+    entry clientes (
+        label: Clientes
+        icon {
+            imageIconCssClasses: fa-building
+        }
+        layout {
+            sequence: 15
+        }
+        link {
+            target: {
+                page: 200
+            }
+        }
+    )
+
     entry parametros (
         label: Parámetros
         icon {

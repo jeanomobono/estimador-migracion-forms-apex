@@ -27,5 +27,50 @@ breadcrumb breadcrumb (
         }
     )
 
+    entry clientes (
+        name: Clientes
+        pageNumber: 200
+        execution {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 200
+            }
+        }
+    )
+
+    entry cliente-form (
+        name: &P201_CLIENTE_NOMBRE.
+        pageNumber: 201
+        execution {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 201
+                items: {
+                    P201_CLIENTE_ID: &P201_CLIENTE_ID.
+                }
+            }
+        }
+    )
+
+    entry proyectos-cliente (
+        name: Proyectos
+        pageNumber: 210
+        execution {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 210
+                items: {
+                    P210_CLIENTE_ID: &P210_CLIENTE_ID.
+                }
+            }
+        }
+    )
+
 )
 
