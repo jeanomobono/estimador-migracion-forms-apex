@@ -161,7 +161,7 @@ page 210 (
         layout {
             sequence: 10
             region: @ir-proyectos
-            slot: REGION_POSITION_01
+            slot: regionBody
         }
         security {
             sessionStateProtection: checksumRequiredSessionLevel
@@ -173,7 +173,7 @@ page 210 (
         layout {
             sequence: 20
             region: @ir-proyectos
-            slot: REGION_POSITION_01
+            slot: regionBody
         }
     )
 
@@ -270,7 +270,6 @@ page 210 (
             }
             execution {
                 sequence: 10
-                event: @refresh-after-modal
                 fireOnInit: false
             }
         )

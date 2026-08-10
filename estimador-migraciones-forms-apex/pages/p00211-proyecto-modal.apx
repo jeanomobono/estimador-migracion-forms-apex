@@ -237,7 +237,7 @@ page 211 (
         layout {
             sequence: 30
             region: @buttons-proyecto
-            slot: NEXT
+            slot: CREATE
         }
         appearance {
             buttonTemplate: @/text
@@ -269,7 +269,6 @@ page 211 (
             action: cancelDialog
             execution {
                 sequence: 10
-                event: @cancel-dialog
                 fireOnInit: false
             }
         )

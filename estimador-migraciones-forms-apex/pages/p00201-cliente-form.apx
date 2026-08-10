@@ -165,9 +165,6 @@ page 201 (
                 dataType: number
                 primaryKey: true
             }
-            exportPrinting {
-                includeInExportPrint: false
-            }
         )
 
         column CLIENTE_ID (
@@ -178,10 +175,6 @@ page 201 (
             source {
                 databaseColumn: CLIENTE_ID
                 dataType: number
-            }
-            default {
-                type: item
-                item: P201_CLIENTE_ID
             }
         )
 
@@ -231,14 +224,9 @@ page 201 (
         )
 
         column ORDEN (
-            type: numberField
-            heading {
-                heading: Orden
-                alignment: end
-            }
+            type: hidden
             layout {
                 sequence: 60
-                columnAlignment: end
             }
             source {
                 databaseColumn: ORDEN
@@ -510,7 +498,7 @@ page 201 (
         layout {
             sequence: 30
             region: @buttons-cliente
-            slot: NEXT
+            slot: CREATE
         }
         appearance {
             buttonTemplate: @/text
