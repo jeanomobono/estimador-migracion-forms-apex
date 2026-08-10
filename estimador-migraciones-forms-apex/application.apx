@@ -49,6 +49,10 @@ app ESTIMADOR-MIGRACIONES-FORMS-APEX (
         allowFeedback: true
     }
 
+    errorHandling {
+        errorHandlingFunctionName: ESTIMADOR.PKG_ERROR_HANDLER.handle_error
+    }
+
     substitution APP_NAME (
         value {
             staticValue: Estimador Migraciones Forms-APEX
