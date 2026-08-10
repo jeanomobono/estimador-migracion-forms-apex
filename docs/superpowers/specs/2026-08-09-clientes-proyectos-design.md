@@ -62,7 +62,12 @@ Trigger `TRG_CONTACTOS_CLI_BI`: BEFORE INSERT — setea CREATED_BY/AT (si se agr
 
 > **Nota**: `CONTACTOS_CLIENTE` no requiere auditoría propia en esta versión — la trazabilidad se captura a nivel del cliente padre.
 
-**`PROYECTOS`** — agregar triggers que faltan:
+**`PROYECTOS`** — agregar columnas y triggers:
+
+| Columna | Tipo | Nullable | Notas |
+|---|---|---|---|
+| `FECHA_INICIO_ESTIMADA` | `DATE` | Sí | Fecha estimada de inicio del proyecto |
+| `DESCRIPCION` | `VARCHAR2(4000)` | Sí | Descripción libre del proyecto |
 
 Trigger `TRG_PROYECTOS_BI`: BEFORE INSERT — setea CREATED_BY = APP_USER, confirma CREATED_AT = SYSTIMESTAMP.
 Trigger `TRG_PROYECTOS_BU`: BEFORE UPDATE — setea UPDATED_BY/AT.
@@ -116,7 +121,7 @@ Trigger `TRG_PROYECTOS_BU`: BEFORE UPDATE — setea UPDATED_BY/AT.
 - **Tipo**: Interactive Report
 - **Alias**: `PROYECTOS-CLIENTE`
 - **Parámetro de entrada**: `P210_CLIENTE_ID` (hidden page item)
-- **Query**: `SELECT proyecto_id, nombre, created_by, created_at FROM proyectos WHERE cliente_id = :P210_CLIENTE_ID ORDER BY nombre`
+- **Query**: `SELECT proyecto_id, nombre, fecha_inicio_estimada, created_by, created_at FROM proyectos WHERE cliente_id = :P210_CLIENTE_ID ORDER BY nombre`
 - **Toolbar**: botón "Nuevo proyecto" → abre modal página 211 con `P211_CLIENTE_ID = P210_CLIENTE_ID`
 - **Row actions**:
   - "Editar" → abre modal página 211 con `P211_PROYECTO_ID = PROYECTO_ID`
@@ -130,7 +135,7 @@ Trigger `TRG_PROYECTOS_BU`: BEFORE UPDATE — setea UPDATED_BY/AT.
 - **Alias**: `PROYECTO-MODAL`
 - **Parámetros de entrada**: `P211_PROYECTO_ID` (nullable, PK), `P211_CLIENTE_ID`
 - **Region**: Form con fuente PROYECTOS
-  - Campo visible: NOMBRE (requerido)
+  - Campos visibles: NOMBRE (requerido), FECHA_INICIO_ESTIMADA (Date Picker, opcional), DESCRIPCION (Textarea, opcional)
   - Campos ocultos: PROYECTO_ID (PK), CLIENTE_ID (valor predeterminado = `P211_CLIENTE_ID`)
   - Proceso automático insert/update
   - Botón "Guardar" → procesa + cierra modal + refresca página 210
