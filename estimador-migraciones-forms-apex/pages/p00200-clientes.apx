@@ -1,0 +1,164 @@
+page 200 (
+    name: Clientes
+    alias: CLIENTES
+    title: Clientes
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb-clientes (
+        name: Clientes
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: REGION_POSITION_01
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region ir-clientes (
+        name: Clientes
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                    c.cliente_id,
+                    c.nombre,
+                    c.ciudad,
+                    p.nombre as pais
+                from clientes c
+                left join paises p on p.pais_id = c.pais_id
+                order by c.nombre
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: BODY
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: #DEFAULT#
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 201
+                items: {
+                    P201_CLIENTE_ID: #CLIENTE_ID#
+                }
+                clearCache: 201
+            }
+            linkIcon: <span role="img" aria-label="Editar" class="fa fa-edit" title="Editar cliente"></span>
+        }
+        messages {
+            whenNoDataFound: No hay clientes registrados. Haga clic en "Nuevo cliente" para agregar el primero.
+        }
+
+        column CLIENTE_ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dataType: NUMBER
+            }
+        )
+
+        column NOMBRE (
+            type: plainText
+            heading {
+                heading: Cliente
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: STRING
+            }
+        )
+
+        column CIUDAD (
+            type: plainText
+            heading {
+                heading: Ciudad
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: STRING
+            }
+        )
+
+        column PAIS (
+            type: plainText
+            heading {
+                heading: País
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                dataType: STRING
+            }
+        )
+
+        savedReport PRIMARY (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 15
+            }
+        )
+    )
+
+    button nuevo-cliente (
+        buttonName: NUEVO_CLIENTE
+        label: Nuevo cliente
+        layout {
+            sequence: 10
+            region: @ir-clientes
+            slot: RIGHT_OF_IR_SEARCH_BAR
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-plus
+            hot: true
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 201
+                clearCache: 201
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+)
