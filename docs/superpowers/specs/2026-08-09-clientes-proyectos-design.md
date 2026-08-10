@@ -18,17 +18,30 @@ Permitir crear, editar y eliminar clientes con su información de contacto, y ge
 
 ### Migración 003
 
+**`PAISES`** — tabla nueva (creada antes que CLIENTES para poder referenciarla):
+
+| Columna | Tipo | Nullable | Notas |
+|---|---|---|---|
+| `PAIS_ID` | `NUMBER` | No | PK, GENERATED ALWAYS AS IDENTITY |
+| `NOMBRE` | `VARCHAR2(100)` | No | Unique |
+| `CODIGO_ISO` | `CHAR(2)` | Sí | ISO 3166-1 alpha-2, para uso futuro |
+| `ACTIVO` | `CHAR(1)` | No | Default `'S'`, constraint IN ('S','N') |
+
+Carga inicial: países de Latinoamérica + España (al menos Argentina, Uruguay, Chile, Brasil, Paraguay, Bolivia, Colombia, México, Perú, España).
+
 **`CLIENTES`** — agregar columnas:
 
 | Columna | Tipo | Nullable | Notas |
 |---|---|---|---|
 | `DIRECCION` | `VARCHAR2(400)` | Sí | — |
-| `CIUDAD` | `VARCHAR2(200)` | Sí | — |
-| `PAIS` | `VARCHAR2(100)` | Sí | — |
+| `CIUDAD` | `VARCHAR2(200)` | Sí | Texto libre |
+| `PAIS_ID` | `NUMBER` | Sí | FK → PAISES.PAIS_ID |
 | `CREATED_BY` | `VARCHAR2(255)` | No | Seteado por trigger BEFORE INSERT |
 | `CREATED_AT` | `TIMESTAMP` | No | Default SYSTIMESTAMP, confirmado por trigger |
 | `UPDATED_BY` | `VARCHAR2(255)` | Sí | Seteado por trigger BEFORE UPDATE |
 | `UPDATED_AT` | `TIMESTAMP` | Sí | Seteado por trigger BEFORE UPDATE |
+
+Constraint FK: `FK_CLIENTES_PAIS` → `PK_PAISES`.
 
 Trigger `TRG_CLIENTES_BI`: BEFORE INSERT — setea CREATED_BY/AT.
 Trigger `TRG_CLIENTES_BU`: BEFORE UPDATE — setea UPDATED_BY/AT.
@@ -65,7 +78,7 @@ Trigger `TRG_PROYECTOS_BU`: BEFORE UPDATE — setea UPDATED_BY/AT.
 - **Tipo**: Interactive Report
 - **Alias**: `CLIENTES`
 - **Slot**: BODY
-- **Query**: `SELECT cliente_id, nombre, ciudad, pais FROM clientes ORDER BY nombre`
+- **Query**: `SELECT c.cliente_id, c.nombre, c.ciudad, p.nombre AS pais FROM clientes c LEFT JOIN paises p ON p.pais_id = c.pais_id ORDER BY c.nombre`
 - **Columna NOMBRE**: link que navega a página 210 pasando `P210_CLIENTE_ID = CLIENTE_ID`
 - **Toolbar**: botón "Nuevo cliente" → navega a página 201 sin parámetros
 - **Row actions** (Actions Menu por fila):
@@ -79,7 +92,7 @@ Trigger `TRG_PROYECTOS_BU`: BEFORE UPDATE — setea UPDATED_BY/AT.
 - **Alias**: `CLIENTE-FORM`
 - **Maneja create y edit**: si `P201_CLIENTE_ID` es NULL → insert; si tiene valor → update
 - **Region 1 — Form cliente** (type: form, source: CLIENTES):
-  - Campos visibles: NOMBRE (requerido), DIRECCION, CIUDAD, PAIS
+  - Campos visibles: NOMBRE (requerido), DIRECCION, CIUDAD (texto libre), PAIS_ID (Select List LOV sobre PAISES donde ACTIVO='S', ordenado por NOMBRE; muestra nombre, guarda PAIS_ID)
   - Campo oculto: CLIENTE_ID (PK)
   - Proceso automático de insert/update/delete (Form — Automatic Row Processing)
   - Botón "Guardar":
