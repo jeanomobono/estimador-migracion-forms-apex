@@ -565,22 +565,6 @@ page 201 (
         }
     )
 
-    branch AFTER_INSERT (
-        name: Redirigir a edición tras crear cliente
-        behavior {
-            type: page
-            pageNumber: 201
-        }
-        execution {
-            sequence: 5
-            point: afterProcessing
-        }
-        serverSideCondition {
-            type: request=Value
-            value: CREATE
-        }
-    )
-
     branch AFTER_SAVE_DELETE (
         name: Redirigir a lista de clientes
         behavior {
