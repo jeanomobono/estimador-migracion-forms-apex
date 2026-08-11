@@ -528,7 +528,8 @@ page 201 (
                             :TELEFONO,
                             :EMAIL,
                             nvl(:ORDEN, 10)
-                        );
+                        )
+                        returning contacto_id into :CONTACTO_ID;
                     when 'U' then
                         update contactos_cliente set
                             descripcion = :DESCRIPCION,
