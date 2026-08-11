@@ -20,7 +20,7 @@ page 211 (
         type: staticContent
         layout {
             sequence: 10
-            slot: REGION_POSITION_03
+            slot: dialogFooter
         }
         appearance {
             template: @/buttons-container
@@ -48,24 +48,6 @@ page 211 (
         }
     )
 
-    pageItem P211_PROYECTO_ID (
-        type: hidden
-        layout {
-            sequence: 10
-            region: @form-proyecto
-            slot: regionBody
-        }
-        source {
-            formRegion: @form-proyecto
-            column: PROYECTO_ID
-            dataType: number
-            primaryKey: true
-        }
-        security {
-            sessionStateProtection: checksumRequiredSessionLevel
-        }
-    )
-
     pageItem P211_CLIENTE_ID (
         type: hidden
         layout {
@@ -80,58 +62,6 @@ page 211 (
         }
         security {
             sessionStateProtection: checksumRequiredSessionLevel
-        }
-    )
-
-    pageItem P211_NOMBRE (
-        type: textField
-        label {
-            label: Nombre del proyecto
-            alignment: left
-        }
-        layout {
-            sequence: 30
-            region: @form-proyecto
-            slot: regionBody
-            alignment: left
-        }
-        appearance {
-            template: @/required-floating
-            templateOptions: #DEFAULT#
-            width: 60
-        }
-        validation {
-            valueRequired: true
-            maxLength: 200
-        }
-        source {
-            formRegion: @form-proyecto
-            column: NOMBRE
-            dataType: varchar2
-        }
-    )
-
-    pageItem P211_FECHA_INICIO_ESTIMADA (
-        type: datePicker
-        label {
-            label: Inicio estimado
-            alignment: left
-        }
-        layout {
-            sequence: 40
-            region: @form-proyecto
-            slot: regionBody
-            alignment: left
-        }
-        appearance {
-            template: @/optional-floating
-            templateOptions: #DEFAULT#
-            width: 32
-        }
-        source {
-            formRegion: @form-proyecto
-            column: FECHA_INICIO_ESTIMADA
-            dataType: date
         }
     )
 
@@ -163,13 +93,83 @@ page 211 (
         }
     )
 
+    pageItem P211_FECHA_INICIO_ESTIMADA (
+        type: datePicker
+        label {
+            label: Inicio estimado
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @form-proyecto
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @form-proyecto
+            column: FECHA_INICIO_ESTIMADA
+            dataType: date
+        }
+    )
+
+    pageItem P211_NOMBRE (
+        type: textField
+        label {
+            label: Nombre del proyecto
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @form-proyecto
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            valueRequired: true
+            maxLength: 200
+        }
+        source {
+            formRegion: @form-proyecto
+            column: NOMBRE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P211_PROYECTO_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @form-proyecto
+            slot: regionBody
+        }
+        source {
+            formRegion: @form-proyecto
+            column: PROYECTO_ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
     button cancelar-modal (
         buttonName: CANCEL
         label: Cancelar
         layout {
             sequence: 10
             region: @buttons-proyecto
-            slot: CLOSE
+            slot: close
         }
         appearance {
             buttonTemplate: @/text
@@ -180,13 +180,36 @@ page 211 (
         }
     )
 
+    button crear-proyecto (
+        buttonName: CREATE
+        label: Crear proyecto
+        layout {
+            sequence: 30
+            region: @buttons-proyecto
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P211_PROYECTO_ID
+        }
+    )
+
     button eliminar-proyecto (
         buttonName: DELETE
         label: Eliminar
         layout {
             sequence: 20
             region: @buttons-proyecto
-            slot: DELETE
+            slot: delete
         }
         appearance {
             buttonTemplate: @/text
@@ -214,12 +237,12 @@ page 211 (
         layout {
             sequence: 30
             region: @buttons-proyecto
-            slot: NEXT
+            slot: next
         }
         appearance {
             buttonTemplate: @/text
-            templateOptions: #DEFAULT#
             hot: true
+            templateOptions: #DEFAULT#
         }
         behavior {
             warnOnUnsavedChanges: doNotCheck
@@ -227,29 +250,6 @@ page 211 (
         }
         serverSideCondition {
             type: itemIsNotNull
-            item: P211_PROYECTO_ID
-        }
-    )
-
-    button crear-proyecto (
-        buttonName: CREATE
-        label: Crear proyecto
-        layout {
-            sequence: 30
-            region: @buttons-proyecto
-            slot: CREATE
-        }
-        appearance {
-            buttonTemplate: @/text
-            templateOptions: #DEFAULT#
-            hot: true
-        }
-        behavior {
-            warnOnUnsavedChanges: doNotCheck
-            databaseAction: insert
-        }
-        serverSideCondition {
-            type: itemIsNull
             item: P211_PROYECTO_ID
         }
     )
@@ -272,6 +272,22 @@ page 211 (
                 fireOnInit: false
             }
         )
+
+    )
+
+    process CLOSE_DIALOG (
+        name: Cerrar modal
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 3942823304176104
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE:APPLY-CHANGES:DELETE
+        }
     )
 
     process INIT_PROYECTO (
@@ -282,6 +298,9 @@ page 211 (
             sequence: 10
             point: beforeHeader
         }
+        advanced {
+            executionMappingIdentifier: 3942637821176104
+        }
     )
 
     process SAVE_PROYECTO (
@@ -291,17 +310,10 @@ page 211 (
         execution {
             sequence: 10
         }
+        advanced {
+            executionMappingIdentifier: 3942701492176104
+        }
     )
 
-    process CLOSE_DIALOG (
-        name: Cerrar modal
-        type: closeDialog
-        execution {
-            sequence: 50
-        }
-        serverSideCondition {
-            type: requestIsContainedInValue
-            value: CREATE:APPLY-CHANGES:DELETE
-        }
-    )
 )
+

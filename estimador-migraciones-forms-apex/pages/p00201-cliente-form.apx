@@ -22,7 +22,7 @@ page 201 (
         }
         layout {
             sequence: 10
-            slot: REGION_POSITION_01
+            slot: breadcrumbBar
         }
         appearance {
             template: @/title-bar
@@ -39,7 +39,7 @@ page 201 (
         type: staticContent
         layout {
             sequence: 20
-            slot: regionBody
+            slot: body
         }
         appearance {
             template: @/buttons-container
@@ -56,7 +56,7 @@ page 201 (
         }
         layout {
             sequence: 30
-            slot: regionBody
+            slot: body
         }
         appearance {
             template: @/standard
@@ -90,7 +90,7 @@ page 201 (
         }
         layout {
             sequence: 40
-            slot: regionBody
+            slot: body
         }
         appearance {
             template: @/interactive-report
@@ -367,7 +367,7 @@ page 201 (
         layout {
             sequence: 10
             region: @buttons-cliente
-            slot: CLOSE
+            slot: close
         }
         appearance {
             buttonTemplate: @/text
@@ -388,7 +388,7 @@ page 201 (
         layout {
             sequence: 30
             region: @buttons-cliente
-            slot: CREATE
+            slot: create
         }
         appearance {
             buttonTemplate: @/text
@@ -411,7 +411,7 @@ page 201 (
         layout {
             sequence: 20
             region: @buttons-cliente
-            slot: DELETE
+            slot: delete
         }
         appearance {
             buttonTemplate: @/text
@@ -439,7 +439,7 @@ page 201 (
         layout {
             sequence: 30
             region: @buttons-cliente
-            slot: NEXT
+            slot: next
         }
         appearance {
             buttonTemplate: @/text
@@ -462,7 +462,7 @@ page 201 (
         layout {
             sequence: 25
             region: @buttons-cliente
-            slot: NEXT
+            slot: next
         }
         appearance {
             buttonTemplate: @/text-with-icon
@@ -593,3 +593,4 @@ page 201 (
     )
 
 )
+

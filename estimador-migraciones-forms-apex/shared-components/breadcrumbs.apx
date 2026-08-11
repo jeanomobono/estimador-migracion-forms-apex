@@ -1,19 +1,6 @@
 breadcrumb breadcrumb (
     name: Breadcrumb
 
-    entry home (
-        name: Home
-        pageNumber: 1
-        execution {
-            sequence: 10
-        }
-        link {
-            target: {
-                page: 1
-            }
-        }
-    )
-
     entry admin-parametros (
         name: Parámetros
         pageNumber: 100
@@ -23,6 +10,22 @@ breadcrumb breadcrumb (
         link {
             target: {
                 page: 100
+            }
+        }
+    )
+
+    entry cliente-form (
+        name: &P201_CLIENTE_NOMBRE.
+        pageNumber: 201
+        execution {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 201
+                items: {
+                    P201_CLIENTE_ID: &P201_CLIENTE_ID.
+                }
             }
         }
     )
@@ -40,18 +43,15 @@ breadcrumb breadcrumb (
         }
     )
 
-    entry cliente-form (
-        name: &P201_CLIENTE_NOMBRE.
-        pageNumber: 201
+    entry home (
+        name: Home
+        pageNumber: 1
         execution {
-            sequence: 40
+            sequence: 10
         }
         link {
             target: {
-                page: 201
-                items: {
-                    P201_CLIENTE_ID: &P201_CLIENTE_ID.
-                }
+                page: 1
             }
         }
     )

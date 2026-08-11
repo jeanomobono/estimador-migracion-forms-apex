@@ -1,8 +1,5 @@
 app ESTIMADOR-MIGRACIONES-FORMS-APEX (
     name: Estimador Migraciones Forms-APEX
-    genAI {
-        service: @claude-opus-5
-    }
     logo {
         type: text
         text: Estimador Migraciones Forms-APEX
@@ -45,12 +42,11 @@ app ESTIMADOR-MIGRACIONES-FORMS-APEX (
     sessionStateProtection {
         checksumSalt: A63D8CCC080AFB9B2F424C04B73790979D0CD5B0DDB1A04D62E91E586933932C
     }
-    runtime {
-        allowFeedback: true
-    }
-
     errorHandling {
         errorHandlingFunctionName: ESTIMADOR.PKG_ERROR_HANDLER.handle_error
+    }
+    runtime {
+        allowFeedback: true
     }
 
     substitution APP_NAME (

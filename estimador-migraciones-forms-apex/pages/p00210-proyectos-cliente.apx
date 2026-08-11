@@ -22,7 +22,7 @@ page 210 (
         }
         layout {
             sequence: 10
-            slot: REGION_POSITION_01
+            slot: breadcrumbBar
         }
         appearance {
             template: @/title-bar
@@ -56,7 +56,7 @@ page 210 (
         }
         layout {
             sequence: 20
-            slot: BODY
+            slot: body
         }
         appearance {
             template: @/interactive-report
@@ -77,30 +77,42 @@ page 210 (
         messages {
             whenNoDataFound: No hay proyectos para este cliente. Haga clic en "Nuevo proyecto" para agregar el primero.
         }
+        advanced {
+            savedReportMappingIdentifier: 3939823168176099
+        }
 
-        column PROYECTO_ID (
-            type: hidden
+        column CREATED_AT (
+            type: plainText
             heading {
-                heading: ID
+                heading: Fecha creación
             }
             layout {
-                sequence: 10
+                sequence: 50
+            }
+            appearance {
+                formatMask: DD/MM/YYYY HH24:MI
             }
             source {
-                dataType: NUMBER
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: E
             }
         )
 
-        column NOMBRE (
+        column CREATED_BY (
             type: plainText
             heading {
-                heading: Proyecto
+                heading: Creado por
             }
             layout {
-                sequence: 20
+                sequence: 40
             }
             source {
                 dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
             }
         )
 
@@ -118,36 +130,47 @@ page 210 (
             source {
                 dataType: DATE
             }
+            advanced {
+                endUserAlias: C
+            }
         )
 
-        column CREATED_BY (
+        column NOMBRE (
             type: plainText
             heading {
-                heading: Creado por
+                heading: Proyecto
             }
             layout {
-                sequence: 40
+                sequence: 20
             }
             source {
                 dataType: STRING
             }
+            advanced {
+                endUserAlias: B
+            }
         )
 
-        column CREATED_AT (
-            type: plainText
+        column PROYECTO_ID (
+            type: hidden
             heading {
-                heading: Fecha creación
+                heading: ID
             }
             layout {
-                sequence: 50
-            }
-            appearance {
-                formatMask: DD/MM/YYYY HH24:MI
+                sequence: 10
             }
             source {
-                dataType: DATE
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
             }
         )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
 
         savedReport PRIMARY (
             visibility: primaryDefault
@@ -155,6 +178,7 @@ page 210 (
                 rowsPerPage: 15
             }
         )
+
     )
 
     pageItem P210_CLIENTE_ID (
@@ -184,7 +208,7 @@ page 210 (
         layout {
             sequence: 10
             region: @ir-proyectos
-            slot: RIGHT_OF_IR_SEARCH_BAR
+            slot: rightOfInteractiveReportSearchBar
         }
         appearance {
             buttonTemplate: @/text-with-icon
@@ -213,16 +237,16 @@ page 210 (
         layout {
             sequence: 20
             region: @ir-proyectos
-            slot: RIGHT_OF_IR_SEARCH_BAR
+            slot: rightOfInteractiveReportSearchBar
         }
         appearance {
             buttonTemplate: @/text-with-icon
+            hot: true
             templateOptions: [
                 #DEFAULT#
                 t-Button--iconLeft
             ]
             icon: fa-plus
-            hot: true
         }
         behavior {
             action: redirectThisApp
@@ -234,21 +258,6 @@ page 210 (
                 clearCache: 211
             }
             warnOnUnsavedChanges: doNotCheck
-        }
-    )
-
-    computation COMPUTE_CLIENTE_NOMBRE_210 (
-        itemName: P210_CLIENTE_NOMBRE
-        execution {
-            sequence: 5
-            point: beforeRegions
-        }
-        computation {
-            type: sqlQuerySingleValue
-            sqlQuery:
-                ```sql
-                select nombre from clientes where cliente_id = :P210_CLIENTE_ID
-                ```
         }
     )
 
@@ -274,5 +283,18 @@ page 210 (
                 fireOnInit: false
             }
         )
+
     )
+
+    computation COMPUTE_CLIENTE_NOMBRE_210 (
+        itemName: P210_CLIENTE_NOMBRE
+        execution {
+            sequence: 5
+        }
+        computation {
+            sqlQuery: select nombre from clientes where cliente_id = :P210_CLIENTE_ID
+        }
+    )
+
 )
+

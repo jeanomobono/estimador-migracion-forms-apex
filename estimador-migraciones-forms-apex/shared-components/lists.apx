@@ -62,21 +62,6 @@ list navigation-bar (
 list navigation-menu (
     name: Navigation Menu
 
-    entry home (
-        label: Home
-        icon {
-            imageIconCssClasses: fa-home
-        }
-        layout {
-            sequence: 10
-        }
-        link {
-            target: {
-                page: 1
-            }
-        }
-    )
-
     entry clientes (
         label: Clientes
         icon {
@@ -88,6 +73,21 @@ list navigation-menu (
         link {
             target: {
                 page: 200
+            }
+        }
+    )
+
+    entry home (
+        label: Home
+        icon {
+            imageIconCssClasses: fa-home
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
             }
         }
     )

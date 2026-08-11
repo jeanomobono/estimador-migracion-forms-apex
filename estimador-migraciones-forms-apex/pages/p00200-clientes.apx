@@ -22,7 +22,7 @@ page 200 (
         }
         layout {
             sequence: 10
-            slot: REGION_POSITION_01
+            slot: breadcrumbBar
         }
         appearance {
             template: @/title-bar
@@ -54,7 +54,7 @@ page 200 (
         }
         layout {
             sequence: 20
-            slot: BODY
+            slot: body
         }
         appearance {
             template: @/interactive-report
@@ -67,13 +67,31 @@ page 200 (
                 items: {
                     P201_CLIENTE_ID: #CLIENTE_ID#
                 }
-                clearCache: 201
             }
             linkIcon: <span role="img" aria-label="Editar" class="fa fa-edit" title="Editar cliente"></span>
         }
         messages {
             whenNoDataFound: No hay clientes registrados. Haga clic en "Nuevo cliente" para agregar el primero.
         }
+        advanced {
+            savedReportMappingIdentifier: 3935355512176086
+        }
+
+        column CIUDAD (
+            type: plainText
+            heading {
+                heading: Ciudad
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
 
         column CLIENTE_ID (
             type: hidden
@@ -85,6 +103,9 @@ page 200 (
             }
             source {
                 dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
             }
         )
 
@@ -99,18 +120,8 @@ page 200 (
             source {
                 dataType: STRING
             }
-        )
-
-        column CIUDAD (
-            type: plainText
-            heading {
-                heading: Ciudad
-            }
-            layout {
-                sequence: 30
-            }
-            source {
-                dataType: STRING
+            advanced {
+                endUserAlias: B
             }
         )
 
@@ -125,7 +136,15 @@ page 200 (
             source {
                 dataType: STRING
             }
+            advanced {
+                endUserAlias: D
+            }
         )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
 
         savedReport PRIMARY (
             visibility: primaryDefault
@@ -133,6 +152,7 @@ page 200 (
                 rowsPerPage: 15
             }
         )
+
     )
 
     button nuevo-cliente (
@@ -141,16 +161,16 @@ page 200 (
         layout {
             sequence: 10
             region: @ir-clientes
-            slot: RIGHT_OF_IR_SEARCH_BAR
+            slot: rightOfInteractiveReportSearchBar
         }
         appearance {
             buttonTemplate: @/text-with-icon
+            hot: true
             templateOptions: [
                 #DEFAULT#
                 t-Button--iconLeft
             ]
             icon: fa-plus
-            hot: true
         }
         behavior {
             action: redirectThisApp
@@ -161,4 +181,6 @@ page 200 (
             warnOnUnsavedChanges: doNotCheck
         }
     )
+
 )
+
