@@ -39,7 +39,7 @@ page 201 (
         type: staticContent
         layout {
             sequence: 20
-            slot: BODY
+            slot: regionBody
         }
         appearance {
             template: @/buttons-container
@@ -56,7 +56,7 @@ page 201 (
         }
         layout {
             sequence: 30
-            slot: BODY
+            slot: regionBody
         }
         appearance {
             template: @/standard
@@ -70,17 +70,6 @@ page 201 (
     region ig-contactos (
         name: Contactos
         type: interactiveGrid
-        advanced {
-            htmlDomId: ig_contactos
-        }
-        layout {
-            sequence: 40
-            slot: BODY
-        }
-        appearance {
-            template: @/standard
-            templateOptions: #DEFAULT#
-        }
         source {
             location: localDatabase
             type: sqlQuery
@@ -98,6 +87,21 @@ page 201 (
                 order by orden, contacto_id
                 ```
         }
+        layout {
+            sequence: 40
+            slot: regionBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            htmlDomId: ig_contactos
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P201_CLIENTE_ID
+        }
         edit {
             enabled: true
             allowedOperations: [
@@ -110,60 +114,17 @@ page 201 (
             whenNoDataFound: Sin contactos registrados. Use el botón + para agregar.
         }
         toolbar {
-            controls: [
-                saveButton
-            ]
+            controls: saveButton
         }
-        serverSideCondition {
-            type: itemIsNotNull
-            item: P201_CLIENTE_ID
+        advanced {
+            savedReportMappingIdentifier: 3936596993176093
         }
 
         savedReport PRIMARY (
-            name: Primary
             visibility: primary
+            name: Primary
             view {
                 default: grid
-            }
-
-            displayColumn (
-                column: @DESCRIPCION
-                layout {
-                    sequence: 1
-                }
-            )
-
-            displayColumn (
-                column: @TELEFONO
-                layout {
-                    sequence: 2
-                }
-            )
-
-            displayColumn (
-                column: @EMAIL
-                layout {
-                    sequence: 3
-                }
-            )
-
-            displayColumn (
-                column: @ORDEN
-                layout {
-                    sequence: 4
-                }
-            )
-        )
-
-        column CONTACTO_ID (
-            type: hidden
-            layout {
-                sequence: 10
-            }
-            source {
-                databaseColumn: CONTACTO_ID
-                dataType: number
-                primaryKey: true
             }
         )
 
@@ -178,6 +139,18 @@ page 201 (
             }
         )
 
+        column CONTACTO_ID (
+            type: hidden
+            layout {
+                sequence: 10
+            }
+            source {
+                databaseColumn: CONTACTO_ID
+                dataType: number
+                primaryKey: true
+            }
+        )
+
         column DESCRIPCION (
             type: textField
             heading {
@@ -186,25 +159,11 @@ page 201 (
             layout {
                 sequence: 30
             }
-            source {
-                databaseColumn: DESCRIPCION
-                dataType: varchar2
-            }
             validation {
                 valueRequired: true
             }
-        )
-
-        column TELEFONO (
-            type: textField
-            heading {
-                heading: Teléfono
-            }
-            layout {
-                sequence: 40
-            }
             source {
-                databaseColumn: TELEFONO
+                databaseColumn: DESCRIPCION
                 dataType: varchar2
             }
         )
@@ -233,30 +192,47 @@ page 201 (
                 dataType: number
             }
         )
+
+        column TELEFONO (
+            type: textField
+            heading {
+                heading: Teléfono
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: TELEFONO
+                dataType: varchar2
+            }
+        )
+
     )
 
-    process SET_CONTEXTO_CLIENTE (
-        name: Establecer contexto cliente para trigger
-        type: executeCode
+    pageItem P201_CIUDAD (
+        type: textField
+        label {
+            label: Ciudad
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @form-cliente
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 40
+        }
+        validation {
+            maxLength: 200
+        }
         source {
-            location: localDatabase
-            language: plsql
-            plsqlCode:
-                ```plsql
-                PKG_APEX_CONTEXT.g_cliente_id := :P201_CLIENTE_ID;
-                ```
-        }
-        execution {
-            sequence: 15
-        }
-    )
-
-    process ARP_CONTACTOS (
-        name: IG Contactos - Guardar datos
-        type: interactiveGridAutoRowProcessing
-        editableRegion: @ig-contactos
-        execution {
-            sequence: 20
+            formRegion: @form-cliente
+            column: CIUDAD
+            dataType: varchar2
         }
     )
 
@@ -284,6 +260,33 @@ page 201 (
             sequence: 11
             region: @form-cliente
             slot: regionBody
+        }
+    )
+
+    pageItem P201_DIRECCION (
+        type: textField
+        label {
+            label: Dirección
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @form-cliente
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 400
+        }
+        source {
+            formRegion: @form-cliente
+            column: DIRECCION
+            dataType: varchar2
         }
     )
 
@@ -315,60 +318,6 @@ page 201 (
         }
     )
 
-    pageItem P201_DIRECCION (
-        type: textField
-        label {
-            label: Dirección
-            alignment: left
-        }
-        layout {
-            sequence: 30
-            region: @form-cliente
-            slot: regionBody
-            alignment: left
-        }
-        appearance {
-            template: @/optional-floating
-            templateOptions: #DEFAULT#
-            width: 60
-        }
-        validation {
-            maxLength: 400
-        }
-        source {
-            formRegion: @form-cliente
-            column: DIRECCION
-            dataType: varchar2
-        }
-    )
-
-    pageItem P201_CIUDAD (
-        type: textField
-        label {
-            label: Ciudad
-            alignment: left
-        }
-        layout {
-            sequence: 40
-            region: @form-cliente
-            slot: regionBody
-            alignment: left
-        }
-        appearance {
-            template: @/optional-floating
-            templateOptions: #DEFAULT#
-            width: 40
-        }
-        validation {
-            maxLength: 200
-        }
-        source {
-            formRegion: @form-cliente
-            column: CIUDAD
-            dataType: varchar2
-        }
-    )
-
     pageItem P201_PAIS_ID (
         type: selectList
         label {
@@ -384,7 +333,6 @@ page 201 (
                 where activo = 'S'
                 order by nombre
                 ```
-            displayNullValue: true
         }
         layout {
             sequence: 50
@@ -425,6 +373,29 @@ page 201 (
         }
     )
 
+    button crear (
+        buttonName: CREATE
+        label: Crear cliente
+        layout {
+            sequence: 30
+            region: @buttons-cliente
+            slot: CREATE
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P201_CLIENTE_ID
+        }
+    )
+
     button eliminar (
         buttonName: DELETE
         label: Eliminar
@@ -446,6 +417,29 @@ page 201 (
         confirmation {
             message: ¿Estás seguro de que querés eliminar este cliente? Esta acción no se puede deshacer.
             style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P201_CLIENTE_ID
+        }
+    )
+
+    button guardar (
+        buttonName: APPLY-CHANGES
+        label: Guardar
+        layout {
+            sequence: 30
+            region: @buttons-cliente
+            slot: NEXT
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
         }
         serverSideCondition {
             type: itemIsNotNull
@@ -485,70 +479,12 @@ page 201 (
         }
     )
 
-    button guardar (
-        buttonName: APPLY-CHANGES
-        label: Guardar
-        layout {
-            sequence: 30
-            region: @buttons-cliente
-            slot: NEXT
-        }
-        appearance {
-            buttonTemplate: @/text
-            templateOptions: #DEFAULT#
-            hot: true
-        }
-        behavior {
-            warnOnUnsavedChanges: doNotCheck
-            databaseAction: update
-        }
-        serverSideCondition {
-            type: itemIsNotNull
-            item: P201_CLIENTE_ID
-        }
-    )
-
-    button crear (
-        buttonName: CREATE
-        label: Crear cliente
-        layout {
-            sequence: 30
-            region: @buttons-cliente
-            slot: CREATE
-        }
-        appearance {
-            buttonTemplate: @/text
-            templateOptions: #DEFAULT#
-            hot: true
-        }
-        behavior {
-            warnOnUnsavedChanges: doNotCheck
-            databaseAction: insert
-        }
-        serverSideCondition {
-            type: itemIsNull
-            item: P201_CLIENTE_ID
-        }
-    )
-
-    process INIT_CLIENTE (
-        name: Inicializar form cliente
-        type: formInitialization
-        formRegion: @form-cliente
-        execution {
-            sequence: 10
-            point: beforeHeader
-        }
-    )
-
     computation COMPUTE_CLIENTE_NOMBRE (
         itemName: P201_CLIENTE_NOMBRE
         execution {
             sequence: 5
-            point: beforeRegions
         }
         computation {
-            type: sqlQuerySingleValue
             sqlQuery:
                 ```sql
                 select case
@@ -560,6 +496,65 @@ page 201 (
         }
     )
 
+    process ARP_CONTACTOS (
+        name: IG Contactos - Guardar datos
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @ig-contactos
+        target {
+            targetType: plsqlCode
+            dmlPlsqlCode:
+                ```plsql
+                begin
+                    case :APEX$ROW_STATUS
+                    when 'C' then
+                        insert into contactos_cliente (
+                            cliente_id,
+                            descripcion,
+                            telefono,
+                            email,
+                            orden
+                        ) values (
+                            :P201_CLIENTE_ID,
+                            :DESCRIPCION,
+                            :TELEFONO,
+                            :EMAIL,
+                            nvl(:ORDEN, 10)
+                        );
+                    when 'U' then
+                        update contactos_cliente set
+                            descripcion = :DESCRIPCION,
+                            telefono    = :TELEFONO,
+                            email       = :EMAIL,
+                            orden       = :ORDEN
+                        where contacto_id = :CONTACTO_ID;
+                    when 'D' then
+                        delete from contactos_cliente
+                        where contacto_id = :CONTACTO_ID;
+                    end case;
+                end;
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 3939048562176098
+        }
+    )
+
+    process INIT_CLIENTE (
+        name: Inicializar form cliente
+        type: formInitialization
+        formRegion: @form-cliente
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 3939157941176098
+        }
+    )
+
     process SAVE_CLIENTE (
         name: Guardar cliente
         type: formAutoRowProcessing
@@ -567,21 +562,25 @@ page 201 (
         execution {
             sequence: 10
         }
+        advanced {
+            executionMappingIdentifier: 3939246933176098
+        }
     )
 
-    branch AFTER_SAVE_DELETE (
+    branch (
         name: Redirigir a lista de clientes
+        execution {
+            sequence: 10
+        }
         behavior {
             type: page
             pageNumber: 200
-        }
-        execution {
-            sequence: 10
-            point: afterProcessing
         }
         serverSideCondition {
             type: requestIsContainedInValue
             value: APPLY-CHANGES:DELETE
         }
     )
+
 )
+
