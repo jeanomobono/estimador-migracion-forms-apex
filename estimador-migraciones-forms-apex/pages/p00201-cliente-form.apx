@@ -39,7 +39,7 @@ page 201 (
         type: staticContent
         layout {
             sequence: 20
-            slot: BODY
+            slot: regionBody
         }
         appearance {
             template: @/buttons-container
@@ -56,7 +56,7 @@ page 201 (
         }
         layout {
             sequence: 30
-            slot: BODY
+            slot: regionBody
         }
         appearance {
             template: @/standard
@@ -86,14 +86,18 @@ page 201 (
                 where cliente_id = :P201_CLIENTE_ID
                 order by orden, contacto_id
                 ```
+            pageItemsToSubmit: P201_CLIENTE_ID
         }
         layout {
             sequence: 40
-            slot: BODY
+            slot: regionBody
         }
         appearance {
-            template: @/standard
-            templateOptions: #DEFAULT#
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
         }
         advanced {
             htmlDomId: ig_contactos
@@ -114,7 +118,12 @@ page 201 (
             whenNoDataFound: Sin contactos registrados. Use el botón + para agregar.
         }
         toolbar {
-            controls: saveButton
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                saveButton
+            ]
         }
         advanced {
             savedReportMappingIdentifier: 3936596993176093
@@ -514,7 +523,7 @@ page 201 (
                             email,
                             orden
                         ) values (
-                            to_number(v('P201_CLIENTE_ID')),
+                            :P201_CLIENTE_ID,
                             :DESCRIPCION,
                             :TELEFONO,
                             :EMAIL,
@@ -583,4 +592,3 @@ page 201 (
     )
 
 )
-

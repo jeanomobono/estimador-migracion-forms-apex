@@ -52,6 +52,7 @@ page 210 (
                 where cliente_id = :P210_CLIENTE_ID
                 order by nombre
                 ```
+            pageItemsToSubmit: P210_CLIENTE_ID
         }
         layout {
             sequence: 20
