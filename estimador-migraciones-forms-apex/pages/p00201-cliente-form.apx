@@ -39,7 +39,7 @@ page 201 (
         type: staticContent
         layout {
             sequence: 20
-            slot: regionBody
+            slot: BODY
         }
         appearance {
             template: @/buttons-container
@@ -56,7 +56,7 @@ page 201 (
         }
         layout {
             sequence: 30
-            slot: regionBody
+            slot: BODY
         }
         appearance {
             template: @/standard
@@ -89,7 +89,7 @@ page 201 (
         }
         layout {
             sequence: 40
-            slot: regionBody
+            slot: BODY
         }
         appearance {
             template: @/standard
@@ -514,7 +514,7 @@ page 201 (
                             email,
                             orden
                         ) values (
-                            :P201_CLIENTE_ID,
+                            to_number(v('P201_CLIENTE_ID')),
                             :DESCRIPCION,
                             :TELEFONO,
                             :EMAIL,
