@@ -138,6 +138,7 @@ page 221 (
             source {
                 databaseColumn: ELEMENTO_ID
                 dataType: number
+                primaryKey: true
             }
         )
 
@@ -369,6 +370,7 @@ page 221 (
             source {
                 databaseColumn: LINEA_DETALLE_ID
                 dataType: number
+                primaryKey: true
             }
         )
 
