@@ -171,6 +171,328 @@ page 221 (
 
     )
 
+    region ig-lineas (
+        name: Líneas de detalle
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                    ld.linea_detalle_id,
+                    ld.elemento_id,
+                    ld.estimacion_param_complejidad_id,
+                    ld.cantidad,
+                    to_char(ld.cantidad * epc.horas, 'FM9990.99') as horas_total
+                from lineas_detalle ld
+                join estimacion_parametros_complejidad epc
+                    on ld.estimacion_param_complejidad_id = epc.estimacion_param_complejidad_id
+                ```
+            pageItemsToSubmit: P221_VERSION_ESTIMACION_ID
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: #DEFAULT#
+        }
+        masterDetail {
+            masterRegion: @ig-elementos
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 5021162747691044
+        }
+
+        savedReport primary (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    sequence: 0
+                }
+            )
+
+            displayColumn (
+                column: @LINEA_DETALLE_ID
+                layout {
+                    show: false
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ELEMENTO_ID
+                layout {
+                    show: false
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @ESTIMACION_PARAM_COMPLEJIDAD_ID
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @CANTIDAD
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @HORAS_TOTAL
+                layout {
+                    sequence: 5
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column CANTIDAD (
+            type: numberField
+            heading {
+                heading: Cantidad
+            }
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: CANTIDAD
+                dataType: number
+            }
+            default {
+                type: static
+                staticValue: 1
+            }
+        )
+
+        column ELEMENTO_ID (
+            type: hidden
+            heading {
+                heading: Elemento ID
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: ELEMENTO_ID
+                dataType: number
+            }
+            masterDetail {
+                masterColumn: @ELEMENTO_ID
+            }
+        )
+
+        column ESTIMACION_PARAM_COMPLEJIDAD_ID (
+            type: selectList
+            heading {
+                heading: Tipo / Nivel
+            }
+            lov {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select tipo_elemento || ' – ' || nvl(nivel_complejidad, '—') || '  (' || horas || ' h)' as d,
+                           estimacion_param_complejidad_id as r
+                    from estimacion_parametros_complejidad
+                    where version_estimacion_id = :P221_VERSION_ESTIMACION_ID
+                    order by tipo_elemento, horas
+                    ```
+                displayExtraValues: false
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: ESTIMACION_PARAM_COMPLEJIDAD_ID
+                dataType: number
+            }
+        )
+
+        column HORAS_TOTAL (
+            type: displayOnly
+            heading {
+                heading: Horas
+            }
+            layout {
+                sequence: 70
+            }
+            source {
+                databaseColumn: HORAS_TOTAL
+                dataType: varchar2
+            }
+        )
+
+        column LINEA_DETALLE_ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: LINEA_DETALLE_ID
+                dataType: number
+            }
+        )
+
+    )
+
+    region region-resumen (
+        name: Resumen
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                with prog as (
+                    select nvl(sum(ld.cantidad * epc.horas), 0) h
+                    from elementos e
+                    join lineas_detalle ld on e.elemento_id = ld.elemento_id
+                    join estimacion_parametros_complejidad epc
+                        on ld.estimacion_param_complejidad_id = epc.estimacion_param_complejidad_id
+                    where e.version_estimacion_id = :P221_VERSION_ESTIMACION_ID
+                ),
+                params as (
+                    select concepto, base_calculo, porcentaje, orden
+                    from estimacion_parametros_tiempo_adicional
+                    where version_estimacion_id = :P221_VERSION_ESTIMACION_ID
+                ),
+                horas as (
+                    select
+                        p.h as h_prog,
+                        p.h + sum(case when pa.base_calculo = 'PROGRAMACION'
+                                       then p.h * pa.porcentaje / 100 else 0 end) as h_const
+                    from prog p, params pa
+                    group by p.h
+                )
+                select concepto,
+                       case when pct is not null then to_char(pct, 'FM990.99') || '%' else '' end as porcentaje,
+                       to_char(horas, 'FM9990.99') as horas
+                from (
+                    select 0   ord, 'Programación'          concepto, null               pct, h.h_prog horas from horas h
+                    union all
+                    select case p.base_calculo when 'PROGRAMACION' then p.orden else 50 + p.orden end,
+                           p.concepto, p.porcentaje,
+                           case p.base_calculo
+                               when 'PROGRAMACION'          then h.h_prog  * p.porcentaje / 100
+                               when 'SUBTOTAL_CONSTRUCCION' then h.h_const * p.porcentaje / 100
+                           end
+                    from params p, horas h
+                    union all
+                    select 49, 'Subtotal construcción', null, h.h_const from horas h
+                    union all
+                    select 99, 'TOTAL', null,
+                           h.h_const + sum(case p.base_calculo
+                                               when 'SUBTOTAL_CONSTRUCCION' then h.h_const * p.porcentaje / 100
+                                               else 0 end)
+                    from params p, horas h
+                    group by h.h_const
+                )
+                order by ord
+                ```
+            pageItemsToSubmit: P221_VERSION_ESTIMACION_ID
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+            ]
+        }
+
+        column CONCEPTO (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Concepto
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column HORAS (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Horas
+            }
+            layout {
+                sequence: 3
+                columnAlignment: end
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PORCENTAJE (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: '%'
+            }
+            layout {
+                sequence: 2
+                columnAlignment: end
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
     pageItem P221_PROYECTO_ID (
         type: hidden
         layout {
@@ -190,6 +512,56 @@ page 221 (
         security {
             sessionStateProtection: checksumRequiredSessionLevel
         }
+    )
+
+    dynamicAction actualizar-resumen-por-elementos (
+        name: Actualizar resumen al guardar elementos
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterrefresh
+            selectionType: region
+            region: @ig-elementos
+        }
+
+        action refresh-resumen-elementos (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @region-resumen
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction actualizar-resumen-por-lineas (
+        name: Actualizar resumen al guardar líneas
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterrefresh
+            selectionType: region
+            region: @ig-lineas
+        }
+
+        action refresh-resumen-lineas (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @region-resumen
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
     )
 
     process elementos-save-interactive-grid-data (
@@ -220,6 +592,45 @@ page 221 (
         }
         advanced {
             executionMappingIdentifier: 5015113783657915
+        }
+    )
+
+    process lineas-save-interactive-grid-data (
+        name: Líneas - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @ig-lineas
+        target {
+            targetType: plsqlCode
+            dmlPlsqlCode:
+                ```plsql
+                begin
+                    case :APEX$ROW_STATUS
+                    when 'C' then
+                        insert into lineas_detalle
+                            (elemento_id, version_estimacion_id, estimacion_param_complejidad_id, cantidad)
+                        values (
+                            :ELEMENTO_ID,
+                            (select version_estimacion_id from elementos where elemento_id = :ELEMENTO_ID),
+                            :ESTIMACION_PARAM_COMPLEJIDAD_ID,
+                            nvl(:CANTIDAD, 1)
+                        )
+                        returning linea_detalle_id into :LINEA_DETALLE_ID;
+                    when 'U' then
+                        update lineas_detalle set
+                            estimacion_param_complejidad_id = :ESTIMACION_PARAM_COMPLEJIDAD_ID,
+                            cantidad = :CANTIDAD
+                        where linea_detalle_id = :LINEA_DETALLE_ID;
+                    when 'D' then
+                        delete from lineas_detalle where linea_detalle_id = :LINEA_DETALLE_ID;
+                    end case;
+                end;
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 5023547068691048
         }
     )
 
