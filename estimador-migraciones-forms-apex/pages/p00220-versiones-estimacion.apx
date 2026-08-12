@@ -273,12 +273,8 @@ page 220 (
                   select l_version_id, etapa, orden, peso_porcentaje, recursos_paralelos
                   from parametros_etapa_case;
                 
-                  apex_page.redirect(
-                    p_page        => 221,
-                    p_clear_cache => '221',
-                    p_items       => 'P221_VERSION_ESTIMACION_ID,P221_PROYECTO_ID',
-                    p_values      => to_char(l_version_id) || ',' || to_char(:P220_PROYECTO_ID)
-                  );
+                  :P221_VERSION_ESTIMACION_ID := l_version_id;
+                  :P221_PROYECTO_ID            := :P220_PROYECTO_ID;
                 end;
                 ```
         }
@@ -291,6 +287,18 @@ page 220 (
         serverSideCondition {
             type: requestIsContainedInValue
             value: NUEVA_VERSION
+        }
+    )
+
+    branch (
+        name: Ir a detalle de versión nueva
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 221
+            }
         }
     )
 
