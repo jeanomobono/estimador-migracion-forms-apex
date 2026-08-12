@@ -31,6 +31,9 @@ sqlcl_history*
 ~$*.xlsx
 ~$*.xls
 
+# Estimaciones con datos reales de clientes (no publicar)
+xlsx/estimacion_llena.xlsx
+
 # Local secrets/config that should never be committed
 .env
 .env.local
