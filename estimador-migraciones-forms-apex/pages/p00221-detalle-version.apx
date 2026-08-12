@@ -532,18 +532,18 @@ page 221 (
         }
     )
 
-    dynamicAction actualizar-resumen-por-elementos (
-        name: Actualizar resumen al guardar elementos
+    dynamicAction actualizar-resumen-por-lineas (
+        name: Actualizar resumen al guardar líneas
         execution {
-            sequence: 20
+            sequence: 10
         }
         when {
-            event: apexafterrefresh
+            event: region/interactiveGrid/interactivegridsave
             selectionType: region
-            region: @ig-elementos
+            region: @ig-lineas
         }
 
-        action refresh-resumen-elementos (
+        action refresh-resumen-lineas (
             action: refresh
             affectedElements {
                 selectionType: region
@@ -557,18 +557,18 @@ page 221 (
 
     )
 
-    dynamicAction actualizar-resumen-por-lineas (
-        name: Actualizar resumen al guardar líneas
+    dynamicAction actualizar-resumen-por-elementos (
+        name: Actualizar resumen al guardar elementos
         execution {
-            sequence: 10
+            sequence: 20
         }
         when {
-            event: apexafterrefresh
+            event: region/interactiveGrid/interactivegridsave
             selectionType: region
-            region: @ig-lineas
+            region: @ig-elementos
         }
 
-        action refresh-resumen-lineas (
+        action refresh-resumen-elementos (
             action: refresh
             affectedElements {
                 selectionType: region
