@@ -47,6 +47,281 @@ page 201 (
         }
     )
 
+    region contactos-cliente (
+        name: Contactos cliente
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                    contacto_id,
+                    cliente_id,
+                    descripcion,
+                    telefono,
+                    email,
+                    orden
+                from contactos_cliente
+                where cliente_id = :P201_CLIENTE_ID
+                ```
+            pageItemsToSubmit: P201_CLIENTE_ID
+        }
+        layout {
+            sequence: 50
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P201_CLIENTE_ID
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+                saveButton
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                excel
+                pdf
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 29358429495107337
+        }
+
+        savedReport primary (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @CONTACTO_ID
+                layout {
+                    show: false
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @CLIENTE_ID
+                layout {
+                    show: false
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @DESCRIPCION
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @TELEFONO
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @EMAIL
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @ORDEN
+                layout {
+                    show: false
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    sequence: 0
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column CLIENTE_ID (
+            type: hidden
+            heading {
+                heading: Cliente Id
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: CLIENTE_ID
+                dataType: number
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column CONTACTO_ID (
+            type: hidden
+            heading {
+                heading: Contacto Id
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: CONTACTO_ID
+                dataType: number
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DESCRIPCION (
+            type: textField
+            heading {
+                heading: Descripcion
+            }
+            layout {
+                sequence: 50
+            }
+            validation {
+                valueRequired: true
+                maxLength: 200
+            }
+            source {
+                databaseColumn: DESCRIPCION
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column EMAIL (
+            type: textField
+            heading {
+                heading: Email
+            }
+            layout {
+                sequence: 70
+            }
+            validation {
+                maxLength: 200
+            }
+            source {
+                databaseColumn: EMAIL
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column ORDEN (
+            type: hidden
+            heading {
+                heading: Orden
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                databaseColumn: ORDEN
+                dataType: number
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column TELEFONO (
+            type: textField
+            heading {
+                heading: Telefono
+            }
+            layout {
+                sequence: 60
+            }
+            validation {
+                maxLength: 50
+            }
+            source {
+                databaseColumn: TELEFONO
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+    )
+
     region form-cliente (
         name: Datos del cliente
         type: form
@@ -84,7 +359,6 @@ page 201 (
                     orden
                 from contactos_cliente
                 where cliente_id = :P201_CLIENTE_ID
-                order by orden, contacto_id
                 ```
             pageItemsToSubmit: P201_CLIENTE_ID
         }
@@ -106,6 +380,9 @@ page 201 (
             type: itemIsNotNull
             item: P201_CLIENTE_ID
         }
+        config {
+            buildOption: @commented-out
+        }
         edit {
             enabled: true
             allowedOperations: [
@@ -123,6 +400,16 @@ page 201 (
                 searchField
                 actionsMenu
                 saveButton
+            ]
+        }
+        enableUsersTo {
+            flashback: false
+            defineChartView: false
+        }
+        download {
+            formats: [
+                csv
+                excel
             ]
         }
         advanced {
@@ -216,6 +503,10 @@ page 201 (
             }
         )
 
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
     )
 
     pageItem P201_CIUDAD (
@@ -550,6 +841,9 @@ page 201 (
         advanced {
             executionMappingIdentifier: 3939048562176098
         }
+        config {
+            buildOption: @commented-out
+        }
     )
 
     process INIT_CLIENTE (
@@ -574,6 +868,53 @@ page 201 (
         }
         advanced {
             executionMappingIdentifier: 3939246933176098
+        }
+    )
+
+    process contactos-cliente-save-interactive-grid-data (
+        name: Contactos cliente - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @contactos-cliente
+        target {
+            targetType: plsqlCode
+            dmlPlsqlCode:
+                ```plsql
+                begin
+                    case :APEX$ROW_STATUS
+                    when 'C' then
+                        insert into contactos_cliente (
+                            cliente_id,
+                            descripcion,
+                            telefono,
+                            email,
+                            orden
+                        ) values (
+                            :P201_CLIENTE_ID,
+                            :DESCRIPCION,
+                            :TELEFONO,
+                            :EMAIL,
+                            nvl(:ORDEN, 10)
+                        )
+                        returning contacto_id into :CONTACTO_ID;
+                    when 'U' then
+                        update contactos_cliente set
+                            descripcion = :DESCRIPCION,
+                            telefono    = :TELEFONO,
+                            email       = :EMAIL,
+                            orden       = :ORDEN
+                        where contacto_id = :CONTACTO_ID;
+                    when 'D' then
+                        delete from contactos_cliente
+                        where contacto_id = :CONTACTO_ID;
+                    end case;
+                end;
+                ```
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 29359344913107346
         }
     )
 
