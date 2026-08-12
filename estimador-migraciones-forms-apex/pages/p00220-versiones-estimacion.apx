@@ -1,0 +1,296 @@
+page 220 (
+    name: Versiones de estimación
+    alias: VERSIONES-ESTIMACION
+    title: Versiones de estimación
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb-versiones (
+        name: Versiones
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region ir-versiones (
+        name: Versiones de estimación
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                    v.version_estimacion_id,
+                    v.numero_version,
+                    v.created_by,
+                    v.created_at
+                from versiones_estimacion v
+                where v.proyecto_id = :P220_PROYECTO_ID
+                order by v.numero_version
+                ```
+            pageItemsToSubmit: P220_PROYECTO_ID
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: #DEFAULT#
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 221
+                items: {
+                    P221_VERSION_ESTIMACION_ID: #VERSION_ESTIMACION_ID#
+                    P221_PROYECTO_ID: #P220_PROYECTO_ID#
+                }
+                clearCache: 221
+            }
+            linkIcon: <span role="img" aria-label="Ver detalle" class="fa fa-table-rows" title="Ver detalle"></span>
+        }
+        messages {
+            whenNoDataFound: No hay versiones para este proyecto. Haga clic en «Nueva versión» para crear la primera.
+        }
+        advanced {
+            savedReportMappingIdentifier: 5006989455634741
+        }
+
+        column CREATED_AT (
+            type: plainText
+            heading {
+                heading: Fecha creación
+            }
+            layout {
+                sequence: 40
+            }
+            appearance {
+                formatMask: DD/MM/YYYY HH24:MI
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column CREATED_BY (
+            type: plainText
+            heading {
+                heading: Creado por
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column NUMERO_VERSION (
+            type: plainText
+            heading {
+                heading: Versión
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column VERSION_ESTIMACION_ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport PRIMARY (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 15
+            }
+        )
+
+    )
+
+    pageItem P220_CLIENTE_ID (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @ir-versiones
+            slot: regionBody
+        }
+    )
+
+    pageItem P220_PROYECTO_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @ir-versiones
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    button nueva-version (
+        buttonName: NUEVA_VERSION
+        label: Nueva versión
+        layout {
+            sequence: 10
+            region: @ir-versiones
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-plus
+        }
+    )
+
+    dynamicAction refresh-after-modal (
+        name: Actualizar lista de versiones
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @ir-versiones
+        }
+
+        action refresh-ir-versiones (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @ir-versiones
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process crear-version (
+        name: Crear nueva versión con snapshot de parámetros
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                  l_version_id number;
+                  l_num        number;
+                begin
+                  select nvl(max(numero_version), 0) + 1
+                  into l_num
+                  from versiones_estimacion
+                  where proyecto_id = :P220_PROYECTO_ID;
+                
+                  insert into versiones_estimacion (proyecto_id, numero_version, created_by, created_at)
+                  values (:P220_PROYECTO_ID, l_num, :APP_USER, systimestamp)
+                  returning version_estimacion_id into l_version_id;
+                
+                  insert into estimacion_parametros_complejidad
+                    (version_estimacion_id, tipo_elemento, nivel_complejidad, horas)
+                  select l_version_id, tipo_elemento, nivel_complejidad, horas
+                  from parametros_complejidad;
+                
+                  insert into estimacion_parametros_tiempo_adicional
+                    (version_estimacion_id, concepto, base_calculo, porcentaje, orden)
+                  select l_version_id, concepto, base_calculo, porcentaje, orden
+                  from parametros_tiempo_adicional;
+                
+                  insert into estimacion_parametros_etapa_case
+                    (version_estimacion_id, etapa, orden, peso_porcentaje, recursos_paralelos)
+                  select l_version_id, etapa, orden, peso_porcentaje, recursos_paralelos
+                  from parametros_etapa_case;
+                
+                  :P221_VERSION_ESTIMACION_ID := l_version_id;
+                  :P221_PROYECTO_ID            := :P220_PROYECTO_ID;
+                end;
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 5008009896634743
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: NUEVA_VERSION
+        }
+    )
+
+    branch (
+        name: Ir a detalle de versión nueva
+        execution {
+            sequence: 10
+        }
+        behavior {
+            type: page
+            pageNumber: 221
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: NUEVA_VERSION
+        }
+    )
+
+)
+
