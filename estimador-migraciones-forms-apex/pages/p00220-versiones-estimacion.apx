@@ -46,7 +46,8 @@ page 220 (
                     v.version_estimacion_id,
                     v.numero_version,
                     v.created_by,
-                    v.created_at
+                    v.created_at,
+                    null as link
                 from versiones_estimacion v
                 where v.proyecto_id = :P220_PROYECTO_ID
                 order by v.numero_version
@@ -60,18 +61,6 @@ page 220 (
         appearance {
             template: @/interactive-report
             templateOptions: #DEFAULT#
-        }
-        link {
-            linkColumn: customTarget
-            target: {
-                page: 221
-                items: {
-                    P221_VERSION_ESTIMACION_ID: #VERSION_ESTIMACION_ID#
-                    P221_PROYECTO_ID: #P220_PROYECTO_ID#
-                }
-                clearCache: 221
-            }
-            linkIcon: <span role="img" aria-label="Ver detalle" class="fa fa-table-rows" title="Ver detalle"></span>
         }
         messages {
             whenNoDataFound: No hay versiones para este proyecto. Haga clic en «Nueva versión» para crear la primera.
@@ -112,6 +101,33 @@ page 220 (
             }
             advanced {
                 endUserAlias: C
+            }
+        )
+
+        column LINK (
+            type: link
+            heading {
+                heading: Detalle
+            }
+            layout {
+                sequence: 5
+            }
+            link {
+                target: {
+                    page: 221
+                    items: {
+                        P221_VERSION_ESTIMACION_ID: #VERSION_ESTIMACION_ID#
+                        P221_PROYECTO_ID: &P220_PROYECTO_ID.
+                    }
+                    clearCache: 221
+                }
+                linkText: <span aria-label="Ver detalle" class="fa fa-edit" title="Ver detalle de versión"></span>
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: E
             }
         )
 
@@ -159,10 +175,14 @@ page 220 (
             }
 
             displayColumn CREATED_AT (
-                sequence: 3
+                sequence: 4
             )
 
             displayColumn CREATED_BY (
+                sequence: 3
+            )
+
+            displayColumn LINK (
                 sequence: 2
             )
 

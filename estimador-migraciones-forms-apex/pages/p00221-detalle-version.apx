@@ -68,6 +68,14 @@ page 221 (
                 delete
             ]
         }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                saveButton
+            ]
+        }
         advanced {
             savedReportMappingIdentifier: 5013739245657915
         }
@@ -209,6 +217,14 @@ page 221 (
                 add
                 update
                 delete
+            ]
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                saveButton
             ]
         }
         advanced {
