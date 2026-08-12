@@ -157,6 +157,19 @@ page 220 (
             view {
                 rowsPerPage: 15
             }
+
+            displayColumn CREATED_AT (
+                sequence: 3
+            )
+
+            displayColumn CREATED_BY (
+                sequence: 2
+            )
+
+            displayColumn NUMERO_VERSION (
+                sequence: 1
+            )
+
         )
 
     )

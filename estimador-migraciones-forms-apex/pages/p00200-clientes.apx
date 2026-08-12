@@ -151,6 +151,19 @@ page 200 (
             view {
                 rowsPerPage: 15
             }
+
+            displayColumn CIUDAD (
+                sequence: 1
+            )
+
+            displayColumn NOMBRE (
+                sequence: 2
+            )
+
+            displayColumn PAIS (
+                sequence: 3
+            )
+
         )
 
     )

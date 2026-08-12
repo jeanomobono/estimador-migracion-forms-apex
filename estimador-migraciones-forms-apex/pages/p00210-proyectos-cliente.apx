@@ -44,6 +44,7 @@ page 210 (
                 ```sql
                 select
                     proyecto_id,
+                    'link' as link,
                     nombre,
                     fecha_inicio_estimada,
                     created_by,
@@ -87,7 +88,7 @@ page 210 (
                 heading: Fecha creación
             }
             layout {
-                sequence: 50
+                sequence: 60
             }
             appearance {
                 formatMask: DD/MM/YYYY HH24:MI
@@ -106,7 +107,7 @@ page 210 (
                 heading: Creado por
             }
             layout {
-                sequence: 40
+                sequence: 50
             }
             source {
                 dataType: STRING
@@ -122,7 +123,7 @@ page 210 (
                 heading: Inicio estimado
             }
             layout {
-                sequence: 30
+                sequence: 40
             }
             appearance {
                 formatMask: DD/MM/YYYY
@@ -135,13 +136,39 @@ page 210 (
             }
         )
 
+        column LINK (
+            type: link
+            heading {
+                heading: Versiones
+            }
+            layout {
+                sequence: 20
+            }
+            link {
+                target: {
+                    page: 220
+                    items: {
+                        P220_PROYECTO_ID: #PROYECTO_ID#
+                        P220_CLIENTE_ID: &P210_CLIENTE_ID.
+                    }
+                }
+                linkText: #LINK#
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
         column NOMBRE (
             type: plainText
             heading {
                 heading: Proyecto
             }
             layout {
-                sequence: 20
+                sequence: 30
             }
             source {
                 dataType: STRING
@@ -177,6 +204,27 @@ page 210 (
             view {
                 rowsPerPage: 15
             }
+
+            displayColumn CREATED_AT (
+                sequence: 2
+            )
+
+            displayColumn CREATED_BY (
+                sequence: 1
+            )
+
+            displayColumn FECHA_INICIO_ESTIMADA (
+                sequence: 3
+            )
+
+            displayColumn LINK (
+                sequence: 5
+            )
+
+            displayColumn NOMBRE (
+                sequence: 4
+            )
+
         )
 
     )
