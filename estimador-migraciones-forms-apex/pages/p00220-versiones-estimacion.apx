@@ -299,10 +299,6 @@ page 220 (
             type: page
             pageNumber: 221
         }
-        serverSideCondition {
-            type: requestIsContainedInValue
-            value: NUEVA_VERSION
-        }
     )
 
 )
