@@ -422,8 +422,8 @@ page 221 (
                     group by p.h
                 )
                 select concepto,
-                       case when pct is not null then to_char(pct, 'FM990.99') || '%' else '' end as porcentaje,
-                       to_char(horas, 'FM9990.99') as horas
+                       case when pct is not null then rtrim(to_char(pct, 'FM990.99'), '.') || '%' else '' end as porcentaje,
+                       rtrim(to_char(horas, 'FM9990.99'), '.') as horas
                 from (
                     select 0   ord, 'Programación'          concepto, null               pct, h.h_prog horas from horas h
                     union all
