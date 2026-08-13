@@ -22,7 +22,7 @@ page 100 (
         }
         layout {
             sequence: 10
-            slot: breadcrumbBar
+            slot: REGION_POSITION_01
         }
         appearance {
             template: @/title-bar
@@ -55,7 +55,7 @@ page 100 (
         }
         layout {
             sequence: 20
-            slot: body
+            slot: regionBody
         }
         appearance {
             template: @/standard
@@ -83,42 +83,6 @@ page 100 (
             view {
                 default: grid
             }
-
-            displayColumn (
-                column: @TIPO_ELEMENTO
-                layout {
-                    sequence: 1
-                }
-            )
-
-            displayColumn (
-                column: @NIVEL_COMPLEJIDAD
-                layout {
-                    sequence: 2
-                }
-            )
-
-            displayColumn (
-                column: @HORAS
-                layout {
-                    sequence: 3
-                }
-            )
-
-            displayColumn (
-                column: @UPDATED_BY
-                layout {
-                    sequence: 4
-                }
-            )
-
-            displayColumn (
-                column: @UPDATED_AT
-                layout {
-                    sequence: 5
-                }
-            )
-
         )
 
         column HORAS (
@@ -238,7 +202,7 @@ page 100 (
         }
         layout {
             sequence: 40
-            slot: body
+            slot: regionBody
         }
         appearance {
             template: @/standard
@@ -266,42 +230,6 @@ page 100 (
             view {
                 default: grid
             }
-
-            displayColumn (
-                column: @ETAPA
-                layout {
-                    sequence: 1
-                }
-            )
-
-            displayColumn (
-                column: @PESO_PORCENTAJE
-                layout {
-                    sequence: 2
-                }
-            )
-
-            displayColumn (
-                column: @RECURSOS_PARALELOS
-                layout {
-                    sequence: 3
-                }
-            )
-
-            displayColumn (
-                column: @UPDATED_BY
-                layout {
-                    sequence: 4
-                }
-            )
-
-            displayColumn (
-                column: @UPDATED_AT
-                layout {
-                    sequence: 5
-                }
-            )
-
         )
 
         column ETAPA (
@@ -425,7 +353,7 @@ page 100 (
         }
         layout {
             sequence: 30
-            slot: body
+            slot: regionBody
         }
         appearance {
             template: @/standard
@@ -453,42 +381,6 @@ page 100 (
             view {
                 default: grid
             }
-
-            displayColumn (
-                column: @CONCEPTO
-                layout {
-                    sequence: 1
-                }
-            )
-
-            displayColumn (
-                column: @BASE_CALCULO
-                layout {
-                    sequence: 2
-                }
-            )
-
-            displayColumn (
-                column: @PORCENTAJE
-                layout {
-                    sequence: 3
-                }
-            )
-
-            displayColumn (
-                column: @UPDATED_BY
-                layout {
-                    sequence: 4
-                }
-            )
-
-            displayColumn (
-                column: @UPDATED_AT
-                layout {
-                    sequence: 5
-                }
-            )
-
         )
 
         column BASE_CALCULO (
