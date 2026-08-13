@@ -55,7 +55,7 @@ page 100 (
         }
         layout {
             sequence: 20
-            slot: regionBody
+            slot: body
         }
         appearance {
             template: @/standard
@@ -72,7 +72,12 @@ page 100 (
             whenNoDataFound: Sin datos
         }
         toolbar {
-            controls: saveButton
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                saveButton
+            ]
         }
         advanced {
             savedReportMappingIdentifier: 3729484938984203
@@ -82,6 +87,74 @@ page 100 (
             visibility: primary
             view {
                 default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    sequence: 0
+                }
+            )
+
+            displayColumn (
+                column: @PARAMETRO_COMPLEJIDAD_ID
+                layout {
+                    show: false
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @TIPO_ELEMENTO
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @NIVEL_COMPLEJIDAD
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @HORAS
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_BY
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_AT
+                layout {
+                    sequence: 6
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 65
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 5
             }
         )
 
@@ -202,7 +275,7 @@ page 100 (
         }
         layout {
             sequence: 40
-            slot: regionBody
+            slot: body
         }
         appearance {
             template: @/standard
@@ -219,7 +292,12 @@ page 100 (
             whenNoDataFound: Sin datos
         }
         toolbar {
-            controls: saveButton
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                saveButton
+            ]
         }
         advanced {
             savedReportMappingIdentifier: 3732472813984210
@@ -229,6 +307,74 @@ page 100 (
             visibility: primary
             view {
                 default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    sequence: 0
+                }
+            )
+
+            displayColumn (
+                column: @PARAMETRO_ETAPA_CASE_ID
+                layout {
+                    show: false
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ETAPA
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @PESO_PORCENTAJE
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @RECURSOS_PARALELOS
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_BY
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_AT
+                layout {
+                    sequence: 6
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 65
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 5
             }
         )
 
@@ -353,7 +499,7 @@ page 100 (
         }
         layout {
             sequence: 30
-            slot: regionBody
+            slot: body
         }
         appearance {
             template: @/standard
@@ -370,7 +516,12 @@ page 100 (
             whenNoDataFound: Sin datos
         }
         toolbar {
-            controls: saveButton
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                saveButton
+            ]
         }
         advanced {
             savedReportMappingIdentifier: 3730971601984209
@@ -380,6 +531,74 @@ page 100 (
             visibility: primary
             view {
                 default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    sequence: 0
+                }
+            )
+
+            displayColumn (
+                column: @PARAMETRO_TIEMPO_ADICIONAL_ID
+                layout {
+                    show: false
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @CONCEPTO
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @BASE_CALCULO
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @PORCENTAJE
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_BY
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @UPDATED_AT
+                layout {
+                    sequence: 6
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 65
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 5
             }
         )
 
